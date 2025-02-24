@@ -11,7 +11,7 @@
       }
     ],
     "routes": [
-      { "src": "/api/(.*)", "dest": "api/process-password.js" }
-      
+      { "src": "/api/(.*)", "dest": "api/process-password.js" },
+      { "src": "/(.*)", "dest": "/public/index.html" }
     ]
   }
