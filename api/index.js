@@ -79,7 +79,7 @@ function hexTo2ByteArray(hexString) {
 }
 
 // API - Şifre işleme
-app.post('/process-password', async (req, res) => {
+app.post('/api/process-password', async (req, res) => {
   
     const {userPassword,deviceInfo1,deviceInfo2,passwordOption,passwordOption2} = req.body;
 
