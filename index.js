@@ -13,16 +13,15 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-
-
 mongoose.connect('mongodb+srv://elmastekyazilim:8Rug3mWAC6Exkgh@cluster0.oswmayz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
 
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB bağlantı hatası:'));
-db.once('open', () => console.log('MongoDB bağlandı'));
+db.on('error', console.error.bind(console, 'MongoDB bağlanti hatasi:'));
+db.once('open', () => console.log('MongoDB bağlandi'));
+
 
 // Şema ve Model
 const PasswordSchema = new mongoose.Schema({
