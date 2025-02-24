@@ -114,13 +114,13 @@ app.post('/process-password', async (req, res) => {
     try 
     {
 
-      /*  if(userPassword!=pwdMaster)
+        if(userPassword!=pwdMaster)
         {
             const existing = await PasswordModel.findOne({ deviceInfo1: deviceInfo1 },{deviceInfo2: deviceInfo2});
             if (existing) {
                 return res.status(400).json({ error: 'Bu şifre daha önce kullanılmış' });
             }
-        }*/
+        }
 
 
         const hexString = deviceInfo1;
@@ -141,16 +141,16 @@ app.post('/process-password', async (req, res) => {
         console.log(signedPackage+signedPackage2);
         const result = signedPackage+signedPackage2;
 
-      /*  if((userPassword==pwdUser))
+        if((userPassword==pwdUser))
         {
         const newEntry = new PasswordModel({ deviceInfo1: hexString, deviceInfo2:hexString2,passwordOption:passwordOption,passwordOption2:passwordOption2,finalPsw:result});
         await newEntry.save();
-        }*/
+        }
         
         res.json({ message: 'Şifre işlendi', result });
     } catch (err) {
-        res.status(500).json({ error: 'Sunucu hatası'});
-        console.log(err);
+        res.status(500).json({ error: err.message });
+        
     }
 }else
 {
