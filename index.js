@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-/*
+
 mongoose.connect('mongodb+srv://elmastekyazilim:8Rug3mWAC6Exkgh@cluster0.oswmayz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -23,18 +23,6 @@ mongoose.connect('mongodb+srv://elmastekyazilim:8Rug3mWAC6Exkgh@cluster0.oswmayz
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB bağlantı hatası:'));
 db.once('open', () => console.log('MongoDB bağlandı'));
-
-*/
-
-const mongoURI = "mongodb+srv://elmastekyazilim:8Rug3mWAC6Exkgh@cluster0.oswmayz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
-
-const db=mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => {
-    console.error('Error connecting to MongoDB:', err);
-    process.exit(1);
-  });
 
 // Şema ve Model
 const PasswordSchema = new mongoose.Schema({
@@ -45,8 +33,6 @@ const PasswordSchema = new mongoose.Schema({
     finalPsw:{ type: String},
     timestamp: { type: Date, default: Date.now }
 });
-
-
 
 const PasswordModel = mongoose.model('Password', PasswordSchema);
 
@@ -150,7 +136,7 @@ app.post('/process-password', async (req, res) => {
         res.json({ message: 'Şifre işlendi', result });
     } catch (err) {
         res.status(500).json({ error: err.message });
-        
+        console.log(err);
     }
 }else
 {
