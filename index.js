@@ -81,6 +81,7 @@ function hexTo2ByteArray(hexString) {
 
 // API - Şifre işleme
 app.post('/process-password', async (req, res) => {
+  
     const {userPassword,deviceInfo1,deviceInfo2,passwordOption,passwordOption2} = req.body;
 
     const collection = db.collection("userPasswords");

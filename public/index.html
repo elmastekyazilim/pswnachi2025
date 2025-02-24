@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NAC-HI Şifre Servisi</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, #4facfe, #00f2fe);
@@ -16,12 +18,13 @@
         }
         .container {
             background: white;
-            padding: 50px;
+            padding: 30px;
             border-radius: 15px;
             box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
             max-width: 400px;
-            width: 100%;
+            width: 90%;
             text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
         }
         h2 {
             color: #333;
@@ -63,6 +66,7 @@
             padding: 15px;
             border-radius: 8px;
             font-weight: bold;
+            display: none;
         }
         .success {
             background: #d4edda;
@@ -71,6 +75,16 @@
         .error {
             background: #f8d7da;
             color: #721c24;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -81,9 +95,9 @@
         <input type="password" id="userPassword" required>
 
         <label>Cihaz Şifre 1 (4 Karakter):</label>
-        <input type="text" id="deviceInfo1" required>
+        <input type="text" id="deviceInfo1" required maxlength="4" minlength="4">
         <label>Cihaz Şifre 2 (4 Karakter):</label>
-        <input type="text" id="deviceInfo2" required>
+        <input type="text" id="deviceInfo2" required maxlength="4" minlength="4">
 
         <label>Model:</label>
         <select id="passwordOption">
@@ -112,20 +126,31 @@
 
     <script>
         function submitForm() {
-            const userPassword = document.getElementById("userPassword").value;
-            const deviceInfo1 = document.getElementById("deviceInfo1").value;
-            const deviceInfo2 = document.getElementById("deviceInfo2").value;
+            const userPassword = document.getElementById("userPassword").value.trim();
+            const deviceInfo1 = document.getElementById("deviceInfo1").value.trim();
+            const deviceInfo2 = document.getElementById("deviceInfo2").value.trim();
             const passwordOption = document.getElementById("passwordOption").value;
             const passwordOption2 = document.getElementById("passwordOption2").value;
-            
-            fetch("/process-password", {
+            const resultDiv = document.getElementById("result");
+
+            resultDiv.style.display = "block";
+            resultDiv.className = "result loading";
+            resultDiv.innerHTML = "İşleniyor...";
+
+            // Boş alan kontrolü
+            if (!userPassword || !deviceInfo1 || !deviceInfo2) {
+                resultDiv.className = "result error";
+                resultDiv.innerHTML = `<p>Lütfen tüm alanları doldurun.</p>`;
+                return;
+            }
+
+            fetch("/api/process-password", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userPassword, deviceInfo1, deviceInfo2, passwordOption, passwordOption2 })
             })
             .then(response => response.json())
             .then(data => {
-                const resultDiv = document.getElementById("result");
                 if (data.error) {
                     resultDiv.className = "result error";
                     resultDiv.innerHTML = `<p>Hata: ${data.error}</p>`;
@@ -134,10 +159,9 @@
                     resultDiv.innerHTML = `<p>İşlem Başarılı! Sonuç: ${data.result}</p>`;
                 }
             })
-            .catch(err => {
-                const resultDiv = document.getElementById("result");
+            .catch(() => {
                 resultDiv.className = "result error";
-                resultDiv.innerHTML = `<p>Sunucu hatası</p>`;
+                resultDiv.innerHTML = `<p>Sunucu hatası. Lütfen tekrar deneyin.</p>`;
             });
         }
     </script>

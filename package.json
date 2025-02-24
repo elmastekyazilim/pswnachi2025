@@ -1,17 +1,18 @@
 {
-  "name": "nachipswbackend",
+  "name": "my-vercel-project",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node index.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "description": "Vercel üzerinde çalışan Express.js API",
+  "main": "api/process-password.js",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "mongoose": "^8.10.1"
-  }
+    "express": "^4.17.1",
+    "mongoose": "^6.0.0",
+    "serverless-http": "^3.0.0"
+  },
+  "scripts": {
+    "start": "node api/process-password.js",
+    "dev": "nodemon api/process-password.js"
+  },
+  "author": "ElmasTek Yazılım",
+  "license": "MIT"
 }
