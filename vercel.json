@@ -4,11 +4,14 @@
       {
         "src": "api/process-password.js",
         "use": "@vercel/node"
+      },
+      {
+        "src": "public/index.html",
+        "use": "@vercel/static"
       }
-      
     ],
     "routes": [
       { "src": "/api/(.*)", "dest": "api/process-password.js" }
-     
+      
     ]
   }
