@@ -144,11 +144,11 @@ app.get('/process-password', async (req, res) => {
     
 }
 });
-
+/*
 // HTML Sayfası Servis Etme
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
-});
+});*/
 
 // Sunucuyu başlat
 app.listen(PORT, '0.0.0.0', () => {
