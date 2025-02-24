@@ -145,7 +145,7 @@
             }
 
             fetch("/process-password", {
-                method: "POST",
+                method: "GET",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userPassword, deviceInfo1, deviceInfo2, passwordOption, passwordOption2 })
             })
