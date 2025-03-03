@@ -37,7 +37,7 @@ const PasswordModel = mongoose.model('Password', PasswordSchema);
 
 // Şifre ve ID listeleri
 const psw_arr = [[90, 145, 162, 254],[8, 127, 192, 199],[18, 124, 197, 246],[34, 131, 132, 209],[63, 140, 172, 238],[69, 107, 166, 251],[20, 130, 197, 225],[13, 20, 21, 105],[13, 82, 115, 235],[33, 132, 159, 252],[147, 150, 151, 210],[8, 139, 197, 228],[10, 70, 120, 236],[5, 87, 16, 248],[231, 67, 169, 84]];
-const pswNames = ["NACHI-N","NACHI-M","NACHI-D","MIRNADO-N","MIRNADO-M","MIRNADO-D","8G","13G","15G","20G","25G","34G","43G","52G","62G"];
+const pswNames = ["NACHI-N","NACHI-M","NACHI-D","MIRNADO-N","MIRNADO-M","MIRNADO-D","8G","13G","15G","23G","25G","34G","43G","52G","62G"];
 
 /**
  * Calculates the buffers CRC16.
