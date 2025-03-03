@@ -152,7 +152,7 @@ app.get('/', (req, res) => {
 
 // Sunucuyu başlat
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server ${PORT} portunda çalışıyor`);
+    console.log(`Server ${PORT} port çalışıyor`);
 });
 
 
