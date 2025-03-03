@@ -1,14 +1,11 @@
 {
     "version": 2,
     
-      "rewrites": [
-        { "source": "/(.*)", "destination": "/" }
-      ],
     
     
     "builds": [
       {
-        "src": "api/process-password.js",
+        "src": "/api/process-password.js",
         "use": "@vercel/node"
       },
       {
@@ -17,7 +14,7 @@
       }
     ],
     "routes": [
-      { "src": "/api/(.*)", "dest": "api/process-password.js" },
+      { "src": "/api/(.*)", "dest": "/api/process-password.js" },
       { "src": "/(.*)", "dest": "/public/index.html" }
     ]
   }
