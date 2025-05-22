@@ -123,9 +123,8 @@ app.post('/process-password', async (req, res) => {
         const signedPackage2 = (crc16(Uint8Array.from(joinedList2))>>8).toString(16);
 
        
-      
-        console.log(signedPackage+signedPackage2);
-        const result = signedPackage+signedPackage2;
+     
+        const result = signedPackage.padStart(2, '0')+signedPackage2.padStart(2, '0');
 
         if((userPassword==pwdUser))
         {
@@ -154,5 +153,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server ${PORT} portunda çalışıyor`);
 });
-
 

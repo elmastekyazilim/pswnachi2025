@@ -39,111 +39,103 @@ const PasswordModel = mongoose.model('Password', PasswordSchema);
 const psw_arr = [[90, 145, 162, 254],[8, 127, 192, 199],[18, 124, 197, 246],[34, 131, 132, 209],[63, 140, 172, 238],[69, 107, 166, 251],[20, 130, 197, 225],[13, 20, 21, 105],[13, 82, 115, 235],[33, 132, 159, 252],[147, 150, 151, 210],[8, 139, 197, 228],[10, 70, 120, 236],[5, 87, 16, 248],[231, 67, 169, 84]];
 const pswNames = ["NACHI-N","NACHI-M","NACHI-D","MIRNADO-N","MIRNADO-M","MIRNADO-D","8G","13G","15G","23G","25G","34G","43G","52G","62G"];
 
-/**
- * Calculates the buffers CRC16.
- *
- * @param {Buffer} buffer the data buffer.
- * @return {number} the calculated CRC16.
- * 
- * Source: github.com/yaacov/node-modbus-serial
- */
-function crc16(buffer) {
-    var crc = 0xFFFF;
-    var odd;
-
-    for (var i = 0; i < buffer.length; i++) {
-        crc = crc ^ buffer[i];
-
-        for (var j = 0; j < 8; j++) {
-            odd = crc & 0x0001;
-            crc = crc >> 1;
-            if (odd) {
-                crc = crc ^ 0xA001;
-            }
-        }
-    }
-
-    return crc;
-};
-
-
-
+// 4 karakterlik hex string'i 2 byte buffer'a dönüştür
 function hexTo2ByteArray(hexString) {
     if (hexString.length !== 4) {
         throw new Error("Hex string must be exactly 4 characters long");
     }
     const value = parseInt(hexString, 16);
     const buffer = Buffer.alloc(2);
-    buffer.writeUInt16BE(value, 0);
+    buffer.writeUInt16BE(value, 0); // Big Endian
     return buffer;
 }
-
-// API - Şifre işleme
-app.post('/process-password', async (req, res) => {
-  
-    const {userPassword,deviceInfo1,deviceInfo2,passwordOption,passwordOption2} = req.body;
-
-    const collection = db.collection("userPasswords");
-    const user = await collection.findOne({ userName: "Nachi" });
-
-    const collection2 = db.collection("masterPasswords");
-    const user2 = await collection2.findOne({ masterUser: "master" });
-
-
-    const pwdUser=user.passwordUser;
-    const pwdMaster=user2.masterPassword;
-
-    if((userPassword==pwdUser)||(userPassword==pwdMaster))
-    {
-        
-
-    try 
-    {
-
-        if(userPassword!=pwdMaster)
-        {
-            const existing = await PasswordModel.findOne({ deviceInfo1: deviceInfo1 },{deviceInfo2: deviceInfo2});
-            if (existing) {
-                return res.status(400).json({ error: 'Bu şifre daha önce kullanılmış' });
-            }
-        }
-
-
-        const hexString = deviceInfo1;
-        const byteArray = hexTo2ByteArray(hexString);
-        const hexString2 = deviceInfo2;
-        const byteArray2 = hexTo2ByteArray(hexString2);
-
-        const index = pswNames.indexOf(passwordOption);
-        const joinedList = Buffer.concat([Buffer.from(psw_arr[index]), byteArray,byteArray2]);
-        const signedPackage = (crc16(Uint8Array.from(joinedList))>>8).toString(16);
-
-        const index2 = pswNames.indexOf(passwordOption2);
-        const joinedList2 = Buffer.concat([Buffer.from(psw_arr[index2]), byteArray,byteArray2]);
-        const signedPackage2 = (crc16(Uint8Array.from(joinedList2))>>8).toString(16);
-
-       
-      
-        console.log(signedPackage+signedPackage2);
-        const result = signedPackage+signedPackage2;
-
-        if((userPassword==pwdUser))
-        {
-        const newEntry = new PasswordModel({ deviceInfo1: hexString, deviceInfo2:hexString2,passwordOption:passwordOption,passwordOption2:passwordOption2,finalPsw:result});
-        await newEntry.save();
-        }
-        
-        res.json({ message: 'Şifre işlendi', result });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-        console.log(err);
-    }
-}else
-{
-    return res.status(400).json({ error: 'Hatalı Kullanıcı Şifresi' });
-    
+function crcToHexBigEndian(crcValue) {
+    const buf = Buffer.alloc(2);
+    buf.writeUInt16BE(crcValue);
+    return buf.toString('hex');
 }
+
+function crc16(buf) {
+    let crc = 0xFFFF;
+    for (let b of buf) {
+        crc ^= b << 8;
+        for (let i = 0; i < 8; i++) {
+            crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : (crc << 1);
+        }
+    }
+    return crc & 0xFFFF;
+}
+
+// API route
+app.post('/process-password', async (req, res) => {
+    const { userPassword, deviceInfo1, deviceInfo2, passwordOption, passwordOption2 } = req.body;
+
+    try {
+        const collection = db.collection("userPasswords");
+        const user = await collection.findOne({ userName: "Nachi" });
+
+        const collection2 = db.collection("masterPasswords");
+        const user2 = await collection2.findOne({ masterUser: "master" });
+
+        const pwdUser = user?.passwordUser;
+        const pwdMaster = user2?.masterPassword;
+
+        if (!pwdUser || !pwdMaster) {
+            return res.status(500).json({ error: "Şifre kayıtları eksik" });
+        }
+
+        if ((userPassword === pwdUser) || (userPassword === pwdMaster)) {
+            if (userPassword !== pwdMaster) {
+                const existing = await PasswordModel.findOne({ deviceInfo1: deviceInfo1, deviceInfo2: deviceInfo2 });
+                if (existing) {
+                    return res.status(400).json({ error: 'Bu şifre daha önce kullanılmış' });
+                }
+            }
+
+            const byteArray = hexTo2ByteArray(deviceInfo1);
+            const byteArray2 = hexTo2ByteArray(deviceInfo2);
+
+            const index1 = pswNames.indexOf(passwordOption);
+            const index2 = pswNames.indexOf(passwordOption2);
+
+            if (index1 === -1 || index2 === -1) {
+                return res.status(400).json({ error: 'Geçersiz şifre seçenekleri' });
+            }
+
+            const joinedList1 = Buffer.concat([Buffer.from(psw_arr[index1]), byteArray, byteArray2]);
+            const crcValue1 = crc16(Uint8Array.from(joinedList1));
+            const signedPackage = ('0000' + crcValue1.toString(16)).slice(-4);
+            console.log(crcValue1);
+            const joinedList2 = Buffer.concat([Buffer.from(psw_arr[index2]), byteArray, byteArray2]);
+            const crcValue2 = crc16(Uint8Array.from(joinedList2));
+            const signedPackage2 = ('0000' + crcValue2.toString(16)).slice(-4);
+            console.log(crcValue2);
+            const result = signedPackage + signedPackage2;
+         
+          
+            
+            if (userPassword === pwdUser) {
+                const newEntry = new PasswordModel({
+                    deviceInfo1: deviceInfo1,
+                    deviceInfo2: deviceInfo2,
+                    passwordOption: passwordOption,
+                    passwordOption2: passwordOption2,
+                    finalPsw: result
+                });
+                await newEntry.save();
+            }
+
+            return res.json({ message: 'Şifre işlendi', result });
+        } else {
+            return res.status(400).json({ error: 'Hatalı Kullanıcı Şifresi' });
+        }
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: err.message });
+    }
 });
+
 
 // HTML Sayfası Servis Etme
 app.get('/', (req, res) => {
@@ -153,6 +145,7 @@ app.get('/', (req, res) => {
 // Sunucuyu başlat
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server ${PORT} port çalışıyor`);
+     
 });
 
 
