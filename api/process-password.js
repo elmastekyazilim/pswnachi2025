@@ -78,6 +78,36 @@ function hexTo2ByteArray(hexString) {
     return buffer;
 }
 
+// admin.html sayfasını sun
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public', 'admin.html'));
+});
+
+// Tarih filtreli şifre listeleme
+app.get('/admin/passwords', async (req, res) => {
+    const { start, end } = req.query;
+    const filter = {};
+
+    if (start || end) {
+        filter.timestamp = {};
+        if (start) filter.timestamp.$gte = new Date(start);
+        if (end) {
+            const d = new Date(end);
+            d.setHours(23, 59, 59, 999); // Gün sonuna kadar kapsa
+            filter.timestamp.$lte = d;
+        }
+    }
+
+    try {
+        const list = await PasswordModel.find(filter)
+            .sort({ timestamp: -1 })
+            .select('deviceInfo1 deviceInfo2 passwordOption passwordOption2 finalPsw timestamp')
+            .lean();
+        res.json(list);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 // API - Şifre işleme
 app.post('/process-password', async (req, res) => {
   
