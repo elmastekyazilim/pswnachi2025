@@ -1,171 +1,237 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAC-HI Şifre Servisi</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Şifre Listesi</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            text-align: left;
-            font-weight: bold;
-            margin-top: 10px;
-            color: #555;
-        }
-        input, select, button {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #4facfe;
-            box-shadow: 0px 0px 5px rgba(79, 172, 254, 0.5);
-        }
-        button {
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: linear-gradient(to right, #00c6fb, #005bea);
-        }
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            display: none;
-        }
-        .success {
-            background: #d4edda;
-            color: #155724;
-        }
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 10px;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+      max-width: 1000px;
+      width: 95%;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #555;
+      margin-right: 5px;
+    }
+
+    input[type="date"], button {
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #00c6fb, #005bea);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      word-wrap: break-word;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    #totalCount {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .filter-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .filter-area {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+        width: 100%;
+      }
+
+      thead tr {
+        display: none;
+      }
+
+      tr {
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background: #f9f9f9;
+        padding: 10px;
+      }
+
+      td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #333;
+      }
+
+      td:last-child {
+        border-bottom: none;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>NAC-HI Şifre Servisi</h2>
-        <h3>Bir cihaz için yalnızca bir defa şifre alınabilir lütfen şifreyi not almayı unutmayınız !</h3>
-        <label>Kullanıcı Şifre</label>
-        <input type="password" id="userPassword" required>
-
-        <label>Cihaz Şifre 1 (4 Karakter):</label>
-        <input type="text" id="deviceInfo1" required maxlength="4" minlength="4">
-        <label>Cihaz Şifre 2 (4 Karakter):</label>
-        <input type="text" id="deviceInfo2" required maxlength="4" minlength="4">
-
-        <label>Model:</label>
-        <select id="passwordOption">
-            <option value="NACHI-N">NACHI-N</option>
-            <option value="NACHI-M">NACHI-M</option>
-            <option value="NACHI-D">NACHI-D</option>
-            <option value="MIRNADO-N">MIRNADO-N</option>
-            <option value="MIRNADO-M">MIRNADO-M</option>
-            <option value="MIRNADO-D">MIRNADO-D</option>
-        </select>
-        <label>Gramaj:</label>
-        <select id="passwordOption2">
-            <option value="8G">8G</option>
-            <option value="13G">13G</option>
-            <option value="15G">15G</option>
-            <option value="20G">23G</option>
-            <option value="25G">25G</option>
-            <option value="34G">34G</option>
-            <option value="43G">43G</option>
-            <option value="52G">52G</option>
-            <option value="62G">62G</option>
-        </select>
-        <button onclick="submitForm()">Gönder</button>
-        <div id="result" class="result"></div>
+  <div class="container">
+    <h2>Şifre Kayıtları (Admin Paneli)</h2>
+    <div class="filter-area">
+      <label for="start">Başlangıç Tarihi:</label>
+      <input type="date" id="start">
+      <label for="end">Bitiş Tarihi:</label>
+      <input type="date" id="end">
+      <button onclick="getData()">Filtrele</button>
     </div>
 
-    <script>
-        function submitForm() {
-            const userPassword = document.getElementById("userPassword").value.trim();
-            const deviceInfo1 = document.getElementById("deviceInfo1").value.trim();
-            const deviceInfo2 = document.getElementById("deviceInfo2").value.trim();
-            const passwordOption = document.getElementById("passwordOption").value;
-            const passwordOption2 = document.getElementById("passwordOption2").value;
-            const resultDiv = document.getElementById("result");
+    <div id="totalCount"></div>
 
-            resultDiv.style.display = "block";
-            resultDiv.className = "result loading";
-            resultDiv.innerHTML = "İşleniyor...";
+    <table>
+      <thead>
+        <tr>
+          <th>Cihaz Şifre 1</th>
+          <th>Cihaz Şifre 2</th>
+          <th>Model</th>
+          <th>Gramaj</th>
+          <th>Sonuç Şifre</th>
+          <th>Tarih</th>
+          <th>İşlem</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
 
-            // Boş alan kontrolü
-            if (!userPassword || !deviceInfo1 || !deviceInfo2) {
-                resultDiv.className = "result error";
-                resultDiv.innerHTML = `<p>Lütfen tüm alanları doldurun.</p>`;
-                return;
-            }
+  <script>
+    async function getData() {
+      const start = document.getElementById('start').value;
+      const end = document.getElementById('end').value;
+      const params = new URLSearchParams();
+      if (start) params.append('start', start);
+      if (end) params.append('end', end);
 
-            fetch("/process-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userPassword, deviceInfo1, deviceInfo2, passwordOption, passwordOption2 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    resultDiv.className = "result error";
-                    resultDiv.innerHTML = `<p>Hata: ${data.error}</p>`;
-                } else {
-                   
-                    resultDiv.className = "result success";
-                    resultDiv.innerHTML = `<p>İşlem Başarılı! Sonuç: ${data.result}</p>`;
-                }
-            })
-            .catch(() => {
-                resultDiv.className = "result error";
-                resultDiv.innerHTML = `<p>Sunucu hatası. Lütfen tekrar deneyin.</p>`;
-            });
-        }
-    </script>
+      const res = await fetch('/admin/passwords?' + params.toString());
+      const data = await res.json();
+      const tbody = document.getElementById('tableBody');
+      const totalCount = document.getElementById('totalCount');
+      tbody.innerHTML = '';
+
+      if (!data.length) {
+        totalCount.innerText = 'Toplam cihaz sayısı: 0';
+        tbody.innerHTML = '<tr><td colspan="7">Kayıt bulunamadı</td></tr>';
+        return;
+      }
+
+      totalCount.innerText = `Toplam cihaz sayısı: ${data.length}`;
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td data-label="Cihaz Şifre 1">${row.deviceInfo1}</td>
+          <td data-label="Cihaz Şifre 2">${row.deviceInfo2}</td>
+          <td data-label="Model">${row.passwordOption}</td>
+          <td data-label="Gramaj">${row.passwordOption2}</td>
+          <td data-label="Sonuç Şifre">${row.finalPsw}</td>
+          <td data-label="Tarih">${new Date(row.timestamp).toLocaleString()}</td>
+          <td data-label="İşlem"><button onclick="deleteRow('${row.deviceInfo1}', '${row.deviceInfo2}')">Sil</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function deleteRow(device1, device2) {
+      const pwd = prompt('Silme işlemi için şifre girin:');
+      if (pwd !== '9(i55Lh2C)MRo>8{') {
+        alert('Hatalı şifre. Silme işlemi iptal edildi.');
+        return;
+      }
+
+      const res = await fetch('/admin/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceInfo1: device1, deviceInfo2: device2 })
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert('Kayıt silindi.');
+        getData();
+      } else {
+        alert('Silme başarısız: ' + result.error);
+      }
+    }
+
+    // Sayfa açıldığında otomatik veri getir
+    getData();
+  </script>
 </body>
 </html>
