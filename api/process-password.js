@@ -80,7 +80,20 @@ function hexTo2ByteArray(hexString) {
 
 // admin.html sayfasını sun
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public', 'admin.html'));
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+app.post('/admin/delete', async (req, res) => {
+  const { deviceInfo1, deviceInfo2 } = req.body;
+  try {
+    const result = await PasswordModel.deleteOne({ deviceInfo1, deviceInfo2 });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Kayıt bulunamadı' });
+    }
+    res.json({ message: 'Kayıt silindi' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Tarih filtreli şifre listeleme

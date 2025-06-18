@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Şifre Listesi</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 10px;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+      max-width: 1000px;
+      width: 95%;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #555;
+      margin-right: 5px;
+    }
+
+    input[type="date"], button {
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #00c6fb, #005bea);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    #totalCount {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .filter-area {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Şifre Kayıtları (Admin Paneli)</h2>
+    <div class="filter-area">
+      <label for="start">Başlangıç Tarihi:</label>
+      <input type="date" id="start">
+      <label for="end">Bitiş Tarihi:</label>
+      <input type="date" id="end">
+      <button onclick="getData()">Filtrele</button>
+    </div>
+
+    <div id="totalCount"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Cihaz Şifre 1</th>
+          <th>Cihaz Şifre 2</th>
+          <th>Model</th>
+          <th>Gramaj</th>
+          <th>Sonuç Şifre</th>
+          <th>Tarih</th>
+          <th>İşlem</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function getData() {
+      const start = document.getElementById('start').value;
+      const end = document.getElementById('end').value;
+      const params = new URLSearchParams();
+      if (start) params.append('start', start);
+      if (end) params.append('end', end);
+
+      const res = await fetch('/admin/passwords?' + params.toString());
+      const data = await res.json();
+      const tbody = document.getElementById('tableBody');
+      const totalCount = document.getElementById('totalCount');
+      tbody.innerHTML = '';
+
+      if (!data.length) {
+        totalCount.innerText = 'Toplam cihaz sayısı: 0';
+        tbody.innerHTML = '<tr><td colspan="7">Kayıt bulunamadı</td></tr>';
+        return;
+      }
+
+      totalCount.innerText = `Toplam cihaz sayısı: ${data.length}`;
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.deviceInfo1}</td>
+          <td>${row.deviceInfo2}</td>
+          <td>${row.passwordOption}</td>
+          <td>${row.passwordOption2}</td>
+          <td>${row.finalPsw}</td>
+          <td>${new Date(row.timestamp).toLocaleString()}</td>
+          <td><button onclick="deleteRow('${row.deviceInfo1}', '${row.deviceInfo2}')">Sil</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function deleteRow(device1, device2) {
+      const pwd = prompt('Silme işlemi için şifre girin:');
+      if (pwd !== '9(i55Lh2C)MRo>8{') {
+        alert('Hatalı şifre. Silme işlemi iptal edildi.');
+        return;
+      }
+
+      const res = await fetch('/admin/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceInfo1: device1, deviceInfo2: device2 })
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert('Kayıt silindi.');
+        getData();
+      } else {
+        alert('Silme başarısız: ' + result.error);
+      }
+    }
+
+    // Sayfa açıldığında otomatik veri getir
+    getData();
+  </script>
+</body>
+</html>
