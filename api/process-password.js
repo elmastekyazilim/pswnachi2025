@@ -80,7 +80,7 @@ function hexTo2ByteArray(hexString) {
 
 // admin.html sayfasını sun
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public', 'index.html'));
+  res.sendFile(path.join(__dirname, '../public', 'admin.html'));
 });
 
 app.post('/admin/delete', async (req, res) => {
