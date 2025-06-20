@@ -188,7 +188,7 @@ app.post('/process-password', async (req, res) => {
 });
 
 // HTML Sayfası Servis Etme
-app.get('/home', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
