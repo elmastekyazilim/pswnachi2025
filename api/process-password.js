@@ -145,7 +145,13 @@ app.post('/process-password', async (req, res) => {
 
         if(userPassword!=pwdMaster)
         {
-            const existing = await PasswordModel.findOne({ deviceInfo1: deviceInfo1 },{deviceInfo2: deviceInfo2});
+          
+
+            const existing = await PasswordModel.findOne({
+                deviceInfo1: deviceInfo1,
+                deviceInfo2: deviceInfo2
+            });
+
             if (existing) {
                 return res.status(400).json({ error: 'Bu şifre daha önce kullanılmış' });
             }
