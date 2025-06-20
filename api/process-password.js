@@ -25,8 +25,8 @@ db.once('open', () => console.log('MongoDB bağlandi'));
 
 // Şema ve Model
 const PasswordSchema = new mongoose.Schema({
-    deviceInfo1: { type: String, unique: true, required: true },
-    deviceInfo2: { type: String, unique: true, required: true },
+    deviceInfo1: { type: String, required: true },
+    deviceInfo2: { type: String, required: true },
     passwordOption: { type: String},
     passwordOption2: { type: String},
     finalPsw:{ type: String},
